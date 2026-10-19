@@ -1,0 +1,27 @@
+! Title: Twitch Extension Blocker
+! Description: Stops Twitch extensions (video overlay, component, panel) from loading and hides the UI shell they leave behind.
+! Expires: 4 days
+! Homepage: https://github.com/charlescyso/twitch-extension-blocker
+! Tested 2026-10-18 against https://www.twitch.tv/pokelawls (live, logged out, desktop layout, headless Chromium).
+
+! --- 1. Network: never load extension code ---
+! All extension iframes come from <id>.ext-twitch.tv, wrapped in supervisor.ext-twitch.tv.
+! The second domain covers the nested frames too.
+||ext-twitch.tv^$domain=twitch.tv|ext-twitch.tv
+
+! Optional: icons of the extension dock (cosmetic only, the dock is hidden below anyway).
+||extensions-discovery-images.twitch.tv^$image,domain=twitch.tv
+
+! --- 2. Cosmetic: the shell Twitch still renders without the iframes ---
+! Right-side dock that appears on player hover (extension icons, their popovers with
+! component extensions, and the "Introducing the ... Extension!" info balloon).
+twitch.tv##.extensions-dock__layout
+! Transparent box the overlay extension sits in (stays on top of the video with the iframe blocked).
+twitch.tv##.extensions-video-overlay-size-container
+! Extension notifications slot in the player.
+twitch.tv##.extensions-notifications
+! Extension panels under "About": hide the whole masonry slot, not just the panel,
+! so no empty box or "<name> / pop-out / more" header strip is left.
+twitch.tv##[data-test-selector="masonry_container_selector"] > div:has(.extension-panel)
+! Fallback if the panel wrapper structure changes.
+twitch.tv##.extension-panel
